@@ -56,6 +56,7 @@ const LogicSimulator = () => {
   const validOperators = ['and', 'or', 'not', 'nand', 'nor', 'xor', 'xnor'];
 
   const extractVariables = (expr) => {
+    // First split by spaces and operators to get potential variable tokens
     const tokens = expr.toLowerCase()
       .replace(/\(/g, ' ( ')
       .replace(/\)/g, ' ) ')
@@ -63,19 +64,25 @@ const LogicSimulator = () => {
       .filter(token => token.length > 0);
   
     const vars = new Set();
-    tokens.forEach(token => {
-      if (
-        /^[a-z]$/.test(token) && // ✅ only single-letter variables
-        !validOperators.includes(token)
-      ) {
-        vars.add(token.toUpperCase());
+    
+    for (const token of tokens) {
+      // Skip operators and parentheses
+      if (validOperators.includes(token) || token === '(' || token === ')') {
+        continue;
       }
-    });
+      
+      // Check if token is a single letter variable
+      if (/^[a-z]$/.test(token)) {
+        vars.add(token.toUpperCase());
+      } else {
+        // If we find any multi-character token that's not an operator, it's invalid
+        return { variables: [], invalidVariable: token };
+      }
+    }
   
-    return Array.from(vars).sort();
+    return { variables: Array.from(vars).sort(), invalidVariable: null };
   };
   
-
   const validateExpression = (expr) => {
     if (!expr.trim()) {
       setError('');
@@ -93,6 +100,17 @@ const LogicSimulator = () => {
       setError('Expression cannot be empty');
       setIsValid(false);
       return;
+    }
+
+    // Check for valid variables (must be single letters)
+    for (const token of tokens) {
+      if (!validOperators.includes(token) && token !== '(' && token !== ')') {
+        if (!/^[a-z]$/.test(token)) {
+          setError(`Invalid variable "${token}". Variables must be single letters.`);
+          setIsValid(false);
+          return;
+        }
+      }
     }
 
     let parenCount = 0;
@@ -151,8 +169,14 @@ const LogicSimulator = () => {
 
   useEffect(() => {
     if (isValid && expression) {
-      const vars = extractVariables(expression);
-      setVariables(vars);
+      const result = extractVariables(expression);
+      if (result.invalidVariable) {
+        setError(`Invalid variable "${result.invalidVariable}". Variables must be single letters.`);
+        setIsValid(false);
+        setVariables([]);
+      } else {
+        setVariables(result.variables);
+      }
     } else {
       setVariables([]);
     }
@@ -188,7 +212,7 @@ const LogicSimulator = () => {
                 value={expression}
                 onChange={handleExpressionChange}
                 error={!!error}
-                helperText={error}
+                helperText={error || "Use single letter variables only (A, B, C...)"}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -224,6 +248,9 @@ const LogicSimulator = () => {
                 Enter a valid logic expression to access the simulator.
                 <Typography variant="body2" sx={{ mt: 1 }}>
                   Valid operators: AND, OR, NOT, NAND, NOR, XOR, XNOR
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  Variables must be single letters (A, B, C, etc.)
                 </Typography>
               </Alert>
             ) : (
@@ -267,4 +294,4 @@ const LogicSimulator = () => {
   );
 };
 
-export default LogicSimulator; 
+export default LogicSimulator;
