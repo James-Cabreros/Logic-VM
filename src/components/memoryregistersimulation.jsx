@@ -110,42 +110,59 @@ const MemoryRegisterSimulation = ({ expression, variables }) => {
   // Generate logical memory layout based on expression
   useEffect(() => {
     if (expression && variables.length > 0) {
-      // Store variables in memory
       const newMemory = [...memory];
-      
-      // Assign memory addresses to variables (for demonstration)
+      const varMap = {};
+  
+      // Assign values to variables and update memory
       variables.forEach((variable, index) => {
         const address = index + 4;
-        // Simulation: store either 0 or 1 for demo purposes
-        newMemory[address] = Math.round(Math.random());
+        const value = Math.round(Math.random()); // random 0 or 1
+        newMemory[address] = value;
+        varMap[variable] = value;
       });
-      
-      // Store operation code in memory (simplified representation)
+  
+      // Identify logic operation
       let opCode = 0;
       if (expression.toLowerCase().includes('and')) opCode = 1;
       if (expression.toLowerCase().includes('or')) opCode = 2;
       if (expression.toLowerCase().includes('not')) opCode = 3;
       newMemory[0] = opCode;
-      
-      setMemory(newMemory);
-      
+  
+      // Replace variables in expression with actual values
+      let safeExpression = expression;
+      for (const [varName, val] of Object.entries(varMap)) {
+        const regex = new RegExp(`\\b${varName}\\b`, 'g');
+        safeExpression = safeExpression.replace(regex, val);
+      }
+  
+      // Replace logic ops with JS equivalents
+      safeExpression = safeExpression
+        .replace(/\bAND\b/gi, '&&')
+        .replace(/\bOR\b/gi, '||')
+        .replace(/\bNOT\b/gi, '!')
+        .replace(/\s+/g, ' ');
+  
+      let result = 0;
+      try {
+        result = Function(`"use strict"; return (${safeExpression});`)() ? 1 : 0;
+      } catch (err) {
+        console.error("Failed to evaluate expression:", err);
+      }
+  
       // Update registers
       const newRegisters = [...registers];
-      // PC points to start of program
-      newRegisters[0].value = 0;
-      // IR contains the "instruction" (simplified)
-      newRegisters[1].value = opCode << 24 | variables.length;
-      // ACC will store result
-      newRegisters[2].value = 0;
-      // MAR points to first variable
-      newRegisters[3].value = 4;
-      // MDR contains value from memory
-      newRegisters[4].value = newMemory[4];
-      
+      newRegisters[0].value = 0; // PC
+      newRegisters[1].value = (opCode << 24) | variables.length; // IR
+      newRegisters[2].value = result; // ACC
+      newRegisters[3].value = 4; // MAR
+      newRegisters[4].value = newMemory[4]; // MDR
+  
+      setMemory(newMemory);
       setRegisters(newRegisters);
       setCurrentAddress(4);
     }
   }, [expression, variables]);
+  
   
   return (
     <Paper elevation={2} sx={{ p: 2, mb: 3, borderRadius: 2 }}>
