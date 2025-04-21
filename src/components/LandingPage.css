@@ -1,0 +1,192 @@
+/* Reset styles to ensure full-width layout */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Material UI AppBar overrides to ensure full width and no borders */
+.MuiAppBar-root {
+  width: 100% !important;
+  box-shadow: none !important;
+  border: none !important;
+  position: relative !important; /* Keep it in the document flow */
+}
+
+/* Style for the navbar */
+.navbar {
+  background-color: rgba(26, 35, 126, 0.95) !important; /* Semi-transparent deep blue */
+}
+
+.MuiToolbar-root {
+  padding: 0.5rem 2rem !important;
+  color: white;
+}
+
+/* Main landing page styles */
+.landing-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.header {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-image: url('../assets/bg.jpg'); /* Use the background image */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  margin-top: 0; /* Ensure no gap between navbar and header */
+  position: relative;
+}
+
+/* Add an overlay to ensure text remains readable on any background image */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Dark overlay for better text visibility */
+  z-index: 1;
+}
+
+/* Make sure text appears above the overlay */
+.header h1, .header .subtitle, .header .start-button {
+  position: relative;
+  z-index: 2;
+}
+
+.header h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.start-button {
+  padding: 1rem 3rem;
+  font-size: 1.2rem;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.start-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.description-section {
+  padding: 3rem 2rem;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.main-description {
+  font-size: 1.25rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+.features-section {
+  padding: 4rem 2rem;
+  background: white;
+}
+
+.features-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #1a237e;
+  margin-bottom: 3rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 15px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  color: #1a237e;
+  margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+  color: #1a237e;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.feature-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.footer {
+  margin-top: auto;
+  text-align: center;
+  padding: 2rem;
+  background: #f1f3f5;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .start-button {
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+    padding: 0 1rem;
+  }
+  
+  .main-description {
+    font-size: 1.1rem;
+    padding: 0 1rem;
+  }
+}
